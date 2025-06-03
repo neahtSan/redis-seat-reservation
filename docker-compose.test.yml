@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server",
+              "--appendonly", "yes",
+              "--appendfsync", "everysec",
+              "--notify-keyspace-events", "KEA"]
+    volumes:
+      - redis-test-data:/data
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+
+volumes:
+  redis-test-data:
